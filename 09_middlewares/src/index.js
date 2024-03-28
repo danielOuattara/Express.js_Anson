@@ -4,6 +4,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+//--------------- Data
 const users = [
   { id: 1, name: "Johna Doe", username: "johnD" },
   { id: 2, name: "Anna Smith", username: "an88na" },
@@ -15,6 +16,12 @@ const products = [
   { id: 2, name: "eggs" },
   { id: 3, name: "milk" },
 ];
+
+//----------------  Middlewares definition
+const loginMiddleware = (req, res, next) => {
+  console.log(`${req.method} - ${req.url}`);
+  next();
+};
 
 const resolveUserIndex = (req, res, next) => {
   const userId = parseInt(req.params.userId);
@@ -31,19 +38,13 @@ const resolveUserIndex = (req, res, next) => {
   next();
 };
 
-/** middleware parsing incoming json data in req.body */
+/** ------------- middleware parsing incoming json data in req.body */
 app.use(express.json());
 
-// Middleware
-const loginMiddleware = (req, res, next) => {
-  console.log(`${req.method} - ${req.url}`);
-  next();
-};
-
-// Apply middleware on the entire APP
+// --------------- Apply middleware on the entire APP
 app.use(loginMiddleware);
 
-//-------------------------------------------------------------------------
+//---------------- CRUD operations
 // http://localhost:3000/api/v1/users?filter=name&value=na
 app.get("/", (_req, res) => {
   //   return res.send("Hello World, Welcome !");
@@ -52,7 +53,7 @@ app.get("/", (_req, res) => {
   return res.status(201).json({ message: "Hello World, Welcome !" });
 });
 
-//-------------------------------------------------------------------------
+//----------------------------------
 app.get(
   "/api/v1/products",
   (req, res, next) => {
@@ -64,8 +65,7 @@ app.get(
   },
 );
 
-//-------------------------------------------------------------------------
-
+//----------------------------------
 app.get("/api/v1/users", (req, res) => {
   const filter = req.query.filter;
   const value = req.query.value;
@@ -77,7 +77,7 @@ app.get("/api/v1/users", (req, res) => {
   return res.send(users);
 });
 
-//------------------
+//----------------------------------
 app.get("/api/v1/users/:userId", (req, res) => {
   const userId = parseInt(req.params.userId);
   if (isNaN(userId)) {
@@ -93,38 +93,39 @@ app.get("/api/v1/users/:userId", (req, res) => {
   return res.send(user);
 });
 
-//------------------
+//----------------------------------
 app.post("/api/v1/users/", (req, res) => {
   const newUser = { id: new Date().getTime(), ...req.body };
   users.push(newUser);
   return res.status(201).json({ message: "post OK", users });
 });
 
-//------------------
+//----------------------------------
 app.put("/api/v1/users/:userId", resolveUserIndex, (req, res) => {
   users[req.userIndex] = { id: parseInt(req.params.userId), ...req.body };
   return res.status(200).send(users);
 });
 
-//------------------
+//----------------------------------
 app.patch("/api/v1/users/:userId", resolveUserIndex, (req, res) => {
   users[userIndex] = { ...users[userIndex], ...req.body };
   return res.status(200).send(users);
 });
 
-//------------------
+//----------------------------------
 app.delete("/api/v1/users/:userId", resolveUserIndex, (req, res) => {
   users.splice(userIndex, 1);
 
   return res.status(200).send(users);
 });
-//----------------------------------------------------------------
+
+//----------------------------------
 app.use((req, res, next) => {
   console.log("End of logic");
   next();
 });
 
-//------------------
+//----------------------------------
 app.listen(PORT, () =>
   console.log(`Running on port ${PORT}\nhttp://localhost:${PORT}`),
 );
