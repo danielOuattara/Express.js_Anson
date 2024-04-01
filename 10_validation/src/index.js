@@ -189,7 +189,7 @@ app.patch("/api/v1/users/:userId", resolveUserIndex, (req, res) => {
 
 //------------------
 app.delete("/api/v1/users/:userId", resolveUserIndex, (req, res) => {
-  users.splice(userIndex, 1);
+  users.splice(req.userIndex, 1);
 
   return res.status(200).send(users);
 });
