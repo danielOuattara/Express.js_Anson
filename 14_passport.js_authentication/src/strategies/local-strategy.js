@@ -34,6 +34,25 @@ import { users } from "../data/index.js";
 
 //---------------------------------------------------
 
+passport.serializeUser((user, done) => {
+  console.log(`\n\n\nInside Serialize User`);
+  console.log(user);
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  console.log(`\n\n\nInside Deserialize User ID : ${id}`);
+  try {
+    const user = users.find((user) => user.id === id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    done(null, user);
+  } catch (error) {
+    done(err, false);
+  }
+});
+
 export default passport.use(
   new Strategy(function (username, password, done) {
     try {
