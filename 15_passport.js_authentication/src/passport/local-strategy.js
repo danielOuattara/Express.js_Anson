@@ -2,6 +2,55 @@ import passport from "passport";
 import { Strategy } from "passport-local";
 import { users } from "../data/index.js";
 
+//---------------------------------------------------
+
+export default passport.use(
+  new Strategy(function (username, password, done) {
+    try {
+      console.log(`\n\n--> In passport.use 'new Strategy()'`);
+      console.log("\nusername = ", username);
+      console.log("password = ", password);
+      const user = users.find((user) => user.username === username);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      if (user.password !== password) {
+        throw new Error("Invalid credentials");
+      }
+      // all OK !
+      return done(null, user);
+    } catch (error) {
+      console.log(error);
+      done(error, false);
+    }
+  }),
+);
+
+//------------------
+
+passport.serializeUser(function (user, done) {
+  console.log(`\n\n--> Inside Serialize User`);
+  console.log("user =", user);
+  done(null, user.id);
+});
+
+//-------------------
+
+passport.deserializeUser(function (id, done) {
+  console.log(`\n\n--> Inside Deserialize : User ID : ${id}`);
+  try {
+    const user = users.find((user) => user.id === id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    done(null, user);
+  } catch (error) {
+    done(err, false);
+  }
+});
+
+//-----------------------------------------------------------
+
 /**
  * By default the instance from `new Strategy()` accept a function
  * which expect `username` & `password` as default credentials for
@@ -31,48 +80,6 @@ import { users } from "../data/index.js";
 //     }
 //   }),
 // );
-
-//---------------------------------------------------
-
-passport.serializeUser((user, done) => {
-  console.log(`\n\n\nInside Serialize User`);
-  console.log(user);
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  console.log(`\n\n\nInside Deserialize User ID : ${id}`);
-  try {
-    const user = users.find((user) => user.id === id);
-    if (!user) {
-      throw new Error("User not found");
-    }
-    done(null, user);
-  } catch (error) {
-    done(err, false);
-  }
-});
-
-export default passport.use(
-  new Strategy(function (username, password, done) {
-    try {
-      console.log("username = ", username);
-      console.log("password = ", password);
-      const user = users.find((user) => user.username === username);
-      if (!user) {
-        throw new Error("User not found");
-      }
-      if (user.password !== password) {
-        throw new Error("Invalid credentials");
-      }
-      // all OK !
-      return done(null, user);
-    } catch (error) {
-      console.log(error);
-      done(error, null);
-    }
-  }),
-);
 
 //-----------------------------------------------------------
 

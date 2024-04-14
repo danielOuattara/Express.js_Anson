@@ -5,15 +5,6 @@ import { users } from "./../data/index.js";
 // http://localhost:3000/api/v1/users?filter=name&value=na
 
 export const getAllUsers = (req, res) => {
-  console.log("req.session.id = ", req.session.id);
-  console.log("-----------------------");
-  console.log("req.session = ", req.session);
-  console.log("-----------------------");
-  req.sessionStore.get(req.session.id, (err, data) => {
-    if (err) return console.log(err);
-    console.log("sessionData = ", data);
-    console.log("-----------------------");
-  });
   const filter = req.query.filter;
   const value = req.query.value;
 
@@ -41,26 +32,6 @@ export const getOneUser = (req, res) => {
 };
 
 //----------------------------------
-export const createUser = (req, res) => {
-  // console.log("req = ", req["express-validator#contexts"]);
-  const result = validationResult(req);
-  // console.log("result = ", result);
-  // console.log("result.array() = ", result.array());
-
-  // handle error
-  if (!result.isEmpty()) {
-    return res.status(400).send({ errors: result.array() });
-  }
-
-  const validatedData = matchedData(req);
-  console.log("validatedData = ", validatedData);
-
-  const newUser = { id: new Date().getTime(), ...validatedData };
-  users.push(newUser);
-  return res.status(201).json({ message: "post OK", users });
-};
-
-//----------------------------------
 export const updateUser = (req, res) => {
   const result = validationResult(req);
 
@@ -68,10 +39,7 @@ export const updateUser = (req, res) => {
   if (!result.isEmpty()) {
     return res.status(400).send({ errors: result.array() });
   }
-
   const validatedData = matchedData(req);
-  console.log("validatedData = ", validatedData);
-
   users[req.userIndex] = {
     id: parseInt(req.params.userId),
     ...validatedData,

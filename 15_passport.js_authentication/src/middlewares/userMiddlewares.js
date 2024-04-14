@@ -27,9 +27,14 @@ export const userFilterMiddleware = query("filter")
   .withMessage("filter min-length: 3 &  max-length: 12");
 
 //-------
-export const createUserBodyValidation = body(["name", "email", "password"])
+export const createUserBodyValidation = body([
+  "name",
+  "email",
+  "username",
+  "password",
+])
   .notEmpty()
-  .withMessage("name, email & password cannot be empty");
+  .withMessage("name, email, username & password cannot be empty");
 
 //-------
 export const createUserNameValidation = body(["name"])
@@ -37,6 +42,12 @@ export const createUserNameValidation = body(["name"])
   .withMessage("name must be string")
   .isLength({ min: 2, max: 20 })
   .withMessage("name min-length: 2 &  max-length: 12");
+//-------
+export const createUserUserNameValidation = body(["username"])
+  .isString()
+  .withMessage("username must be string")
+  .isLength({ min: 2, max: 20 })
+  .withMessage("username min-length: 2 &  max-length: 12");
 
 //-------
 export const createUserEmailValidation = body(["email"])
